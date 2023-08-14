@@ -20,16 +20,14 @@ const Contacts = () => {
             type: 'ADD_CONTACT',
             payload: newContact,
         });
-        
-        setName('');
-        setNumber('');
     }
 
-    useEffect(() => {
-        console.log(state.contacts);
-    }, [state.contacts]);
+    // useEffect(() => {
+    //     console.log(state.contacts);
+    // }, [state.contacts]);
     
     const deleteContact = id => {
+        // console.log(id)
         dispatch({ type: "DELETE_CONTACT", payload: id });
     };
 
@@ -40,7 +38,7 @@ const Contacts = () => {
     return (
         <SContacts.Container>
             <SContacts.H1>Contact Book</SContacts.H1>
-            <CreateContact onSubmit={onSubmit}/>
+            <CreateContact onSubmit={onSubmit} clearFields={() => { setName(''); setNumber('') }}/>
             {state.contacts.map(contact => 
                 <ContactList 
                     key={contact.id} 
