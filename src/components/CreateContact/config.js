@@ -8,7 +8,7 @@ export const createContactFields = [
     {
         name: 'phone',
         placeholder: '+996 999 99 99 99',
-        type: 'phone',
+        type: 'number',
         label: 'Phone-number'
     },
 ]

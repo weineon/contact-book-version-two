@@ -1,83 +1,70 @@
-import React, { useCallback, useState } from 'react';
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React from 'react';
 import { SCreateContact } from './styled';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import AppInput from '../UI/AppInput/AppInput';
 import { createContactFields } from './config';
 
 const CreateContact = ({ onSubmit, clearFields }) => {
-    // const [name, setName] = useState('');
-    // const [number, setNumber] = useState('');
+  const validateName = (name) => {
+    if (!name) {
+      return 'Name is required';
+    }
+    if (name.length < 3) {
+      return 'Name should be at least 3 characters long';
+    }
+    if (name.length > 20) {
+      return 'Name should be at most 20 characters long';
+    }
+    return '';
+  };
 
-    // const handleNameChange = useCallback((event) => {
-    //     const { value } = event.target;
-    //     setName(value);
-    // }, []);
+  const validateNumber = (number) => {
+    if (!number) {
+      return 'Number is required';
+    }
+    if (number.length < 10) {
+      return 'Number should be at least 10 characters long';
+    }
+    if (number.length > 50) {
+      return 'Number should be at most 50 characters long';
+    }
+    return '';
+  };
 
-    // const handleNumberChange = useCallback((event) => {
-    //     const { value } = event.target;
-    //     setNumber(value);
-    // }, []);
+  const { handleSubmit, control } = useForm();
 
-    // const handleKeyDown = useCallback((event) => {
-    //     if(event.key === "Enter") {
-    //         onSubmit(name, number);
-    //         setName('');
-    //         setNumber('');
-    //     }
-    // }, [onSubmit, name, number])
+  const submitForm = (data) => {
+    console.log('Submitting form with data:', data);
+    onSubmit(data.name, data.phone);
+    clearFields();
+  };
 
-    const schema = yup.object().shape({
-        name: yup.string()
-            .required()
-            .min(3)
-            .max(20),
-        number: yup.number()
-            .required()
-            .min(10)
-            .max(50),
-    })
-
-    const {
-        control,
-        handleSubmit,
-        formState: {
-            errors
-        }
-    } = useForm({
-        resolver: yupResolver(schema)
-    })
-
-    const submitForm = (data) => {
-        console.log('Submitting form with data:', data);
-        onSubmit(data.name, data.number);
-        clearFields()
-    };
-    
-    return (
-        <SCreateContact.Form onSubmit={handleSubmit(submitForm)}>
-            {createContactFields.map(({ name, placeholder, type, label }) => (
-                <Controller
-                    key={name}
-                    control={control}
-                    name={name}
-                    render={({ field }) => (
-                        <AppInput
-                            placeholder={placeholder}
-                            value={field.value}
-                            type={type}
-                            label={label}
-                            errorTitle={errors[name]?.message || ''}
-                            {...field} />
-                    )} 
-                /> 
-            ))}          
-           <SCreateContact.Button type='submit'>
-                Add Contact
-           </SCreateContact.Button>
-        </SCreateContact.Form>
-    );
+  return (
+    <SCreateContact.Form onSubmit={handleSubmit(submitForm)}>
+      {createContactFields.map(({ name, placeholder, type, label }) => (
+        <Controller
+          key={name}
+          control={control}
+          name={name}
+          render={({ field }) => (
+            <AppInput
+              placeholder={placeholder}
+              value={field.value}
+              type={type}
+              label={label}
+              errorTitle={
+                name === 'name'
+                  ? validateName(field.value)
+                  : validateNumber(field.value)
+              }
+              {...field}
+            />
+          )}
+        />
+      ))}
+      <SCreateContact.Button type='submit'>Add Contact</SCreateContact.Button>
+    </SCreateContact.Form>
+  );
 };
 
 export default CreateContact;
